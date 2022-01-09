@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="813383fa-cd2b-4bc0-b99d-242e6143741a" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="schema-validation-pocFlow" doc:id="fa158eef-7b1d-4454-9aad-20fda442296b" >
+		<http:listener doc:name="Listener" doc:id="c886550e-ee17-43a5-bd1c-24115d735355" config-ref="HTTP_Listener_config" path="/validation" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bb54097a-ff40-4260-93d0-7efa13a99876" message="#[payload]"/>
+		<json:validate-schema doc:name="Validate schema" doc:id="1adf0c45-260f-4adf-90a6-ef342a0cba4a" schema="myschema.json"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c8a3847b-77ab-4fa0-af78-a526db6da4bf" message='#["payload validated successfully"]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ae2a87f3-c808-414f-842d-bcd54ec7ee28" type="JSON:SCHEMA_NOT_HONOURED">
+				<file:write doc:name="Write" doc:id="208e26a7-3e5d-449e-9624-89cb4b5fb65f" path="jsonshema.json">
+					<file:content ><![CDATA[#[error.errorMessage.payload]]]></file:content>
+				</file:write>
+				<logger level="INFO" doc:name="Logger" doc:id="788af7c6-e7a7-4800-9648-87fcf60b07d4" message="error is written in the file"/>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

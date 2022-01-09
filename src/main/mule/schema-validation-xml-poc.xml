@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<xml-module:config name="XML_Config" doc:name="XML Config" doc:id="e35f96cb-6a0b-4ecb-898e-dc88d7408baa" />
+	<flow name="schema-validation-xml-pocFlow" doc:id="b39081f4-1e18-4a9a-90ce-6ad98ab779f9" >
+		<http:listener doc:name="Listener" doc:id="df14738c-28aa-45e7-a7da-6aa5c90eb761" config-ref="HTTP_Listener_config" path="/schemavalidation"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8ce7ff24-a699-431e-836b-4612376419bb" message='#["received payload"]'/>
+		<xml-module:validate-schema doc:name="Validate schema" doc:id="c9d14f24-a46b-4845-9219-39700347354a" schemas="schema-xsd.xml" config-ref="XML_Config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="2fbca1f9-56b0-481b-bc7d-803407009128" message='#["payload validated successfuly"]'/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="de3238f2-18eb-4e84-a801-ff3d69d9142d" type="XML-MODULE:SCHEMA_NOT_HONOURED">
+				<logger level="INFO" doc:name="Logger" doc:id="f3685a71-8aa7-4610-b8cb-1384f2e2ad96" message='#["payload xm failed in validation"]'/>
+				<ee:transform doc:name="Transform Message" doc:id="265321a4-a94f-4cba-8144-889be4df55ad" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+error.description]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

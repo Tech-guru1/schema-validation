@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "employeeId": {
+          "type": "integer"
+        },
+        "employeeName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "employeeId",
+        "employeeName"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "employeeId": {
+          "type": "integer"
+        },
+        "employeeName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "employeeId",
+        "employeeName"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "employeeId": {
+          "type": "integer"
+        },
+        "employeeName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "employeeId",
+        "employeeName"
+      ]
+    }
+  ]
+}
